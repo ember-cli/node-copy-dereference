@@ -16,7 +16,16 @@ function copyDereferenceSync (src, dest) {
     // mkdirSync, because we wouldn't be able to populate read-only
     // directories. If we really wanted to preserve directory modes, we could
     // call chmodSync at the end.
-    fs.mkdirSync(dest)
+    var destIsDir = false
+
+    try {
+      destIsDir = fs.statSync(dest).isDirectory()
+    } catch(e) { }
+
+    if (!destIsDir) {
+      fs.mkdirSync(dest)
+    }
+
     var entries = fs.readdirSync(src).sort()
     for (var i = 0; i < entries.length; i++) {
       copyDereferenceSync(src + path.sep + entries[i], dest + path.sep + entries[i])
